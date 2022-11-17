@@ -1,0 +1,167 @@
+import java.util.TreeMap;
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+public class Lab8 {
+	 private static Scanner scanner;
+	    private static Map<String, Double> items = new TreeMap<>();
+	    private static List<String> orderNames = new ArrayList<>();
+	    private static List<Double> orderPrices = new ArrayList<>();
+	    private static List<Integer> orderQtys = new ArrayList<>();
+	public static void main(String[] args) {
+		
+		scanner = new Scanner(System.in);
+        fillItemsMap();
+        System.out.println("Welcome to Guenther's Market!");
+        placeOrder();
+        scanner.close();
+    }
+
+    private static void fillItemsMap() {
+        items.put("apple", .99);
+        items.put("banana", .59);
+        items.put("cauliflower", 1.59);
+        items.put("dragonfruit", 2.19);
+        items.put("elderberry", 1.79);
+        items.put("figs", 2.09);
+        items.put("grapefruit", 1.99);
+        items.put("honeydew", 3.49);
+
+    }
+
+    private static void printMenu(){
+        System.out.printf("%-18s %s\n", "Item", "Price");
+        System.out.println("=========================");
+
+        for (Map.Entry<String, Double> entry: items.entrySet()) {
+            System.out.printf("%-18s $%.2f\n", entry.getKey(), entry.getValue());
+
+        }
+    }
+
+    private static void printOrder() {
+        System.out.println("Thanks for your order!");
+        System.out.println("Here's what you got:");
+        System.out.printf("%-15s %s %7s\n", "Item", "Price", "Qty");
+        System.out.println("=================================");
+
+
+        // loop through both lists and print them out.
+        for (int i = 0; i < orderNames.size(); i ++) {
+            System.out.printf("%-15s $%.2f %7d\n", orderNames.get(i), orderPrices.get(i), orderQtys.get(i));
+        }
+
+        System.out.println();
+        System.out.printf("Average price per item in order was $%.2f.\n", averageCostOfItems());
+        System.out.println("The highest priced item was " + highestPricedItem() + ".");
+        System.out.println("The lowest priced item was " + lowestPricedItem() + ".");
+    }
+
+    private static Double averageCostOfItems() {
+
+        Double totalCost = 0.0;
+        Double averageCost = 0.0;
+        int size = orderPrices.size();
+        
+        for (int i = 0; i < size; i++) {
+            totalCost += orderPrices.get(i);
+        }
+
+        averageCost = totalCost / size;
+
+        return averageCost;
+    }
+
+    private static String highestPricedItem() {
+
+        String highestPricedItem = orderNames.get(0);
+        Double highestItemCost = orderPrices.get(0);
+        int size = orderPrices.size();
+
+
+        for (int i = 0; i < size; i ++) {
+            if (orderPrices.get(i) > highestItemCost) {
+                highestItemCost = orderPrices.get(i);
+                highestPricedItem = orderNames.get(i);
+            }
+        }
+
+        return highestPricedItem;
+
+    }
+
+    private static String lowestPricedItem() {
+
+        String lowestPricedItem = orderNames.get(0);
+        Double lowestItemCost = orderPrices.get(0);
+        int size = orderPrices.size();
+
+
+        for (int i = 0; i < size; i ++) {
+            if (orderPrices.get(i) < lowestItemCost) {
+                lowestItemCost = orderPrices.get(i);
+                lowestPricedItem = orderNames.get(i);
+            }
+        }
+
+        return lowestPricedItem;
+    }
+
+    private static void addToCart(String itemName, Double itemPrice) {
+
+        if (orderNames.contains(itemName)) {
+            int index = orderNames.indexOf(itemName);
+            int updateQty = orderQtys.get(index) + 1;
+            Double updatePrice = orderPrices.get(index) * updateQty;
+
+            orderQtys.set(index, updateQty);
+            orderPrices.set(index, updatePrice);
+        } else {
+            orderNames.add(itemName);
+            orderPrices.add(itemPrice);
+            orderQtys.add(1);
+        }
+
+    }
+
+    private static void placeOrder() {
+        printMenu();
+        System.out.println();
+        System.out.print("What items would you like to order? ");
+        String itemName = scanner.nextLine();
+        Double itemPrice = 0.0;
+
+        if (items.containsKey(itemName) == false) {
+            System.out.printf("%s is not on the menu. ", itemName);
+            System.out.println("Please enter a vaild item from the menu below:");
+            placeOrder();
+        } else {
+            itemPrice = items.get(itemName);
+            addToCart(itemName, itemPrice);
+            System.out.println("Adding " + itemName + " to cart at $" + itemPrice);
+            addToOrderOrExit();
+        }
+    }
+
+    private static void addToOrderOrExit() {
+
+        System.out.print("Would you like to order anyting else? (y/n): ");
+        String newItem = scanner.nextLine();
+        System.out.println();
+    
+        if (newItem.equals("no") | newItem.equals("n")) {
+            printOrder();
+            System.out.println();
+            System.out.println("Good bye!");
+        } else if (newItem.equals("yes") | newItem.equals("y")) {
+            placeOrder();
+        } else {
+            System.out.println("Please enter a valid option.");
+            addToOrderOrExit();
+        }
+
+    }
+
+
+	}
